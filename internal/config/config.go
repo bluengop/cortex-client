@@ -9,11 +9,17 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Configuration for the Cortex Client
+// So far, the only mandatory value is
+// ApiKey, since BaseUrl has a default
+// value.
 type Config struct {
 	BaseUrl string `mapstructure:"BASE_URL"`
 	ApiKey  string `mapstructure:"API_KEY"`
 }
 
+// GetConfig returns a Config object to retreive information
+// for both Request creation and Client instantiation
 func GetConfig(file string) (*Config, error) {
 	// Set the path to look for the configurations file
 	//log.Printf("Path is %s", path)

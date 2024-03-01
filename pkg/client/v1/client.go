@@ -8,11 +8,9 @@ import (
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/bluengop/cortex-client/internal/requests"
-	"github.com/bluengop/cortex-client/internal/responses"
 )
 
+// Base URL for the Cortex API version 1
 const BaseURLv1 = "https://api.getcortexapp.com/api/v1"
 
 // Cortex API Client
@@ -23,6 +21,8 @@ type Client struct {
 }
 
 // NewClient() returns a new HTTP Client for Cortex
+// it requires an API Key for Cortex, and optionally,
+// the base URL to interact with.
 func NewClient(url, apikey string) *Client {
 	if url == "" {
 		url = BaseURLv1
@@ -37,15 +37,10 @@ func NewClient(url, apikey string) *Client {
 	}
 }
 
-// HTTP Request parameters
-// So far I've only added the entity tag (x-cortex-tag)
-// that identifies the entity.
-type Parameters struct {
-	Tag string `json:"tag,omitempty"`
-}
-
 // Send HTTP Request Method
-func (c *Client) SendRequest(ctx *context.Context, req *requests.Request) (*responses.Response, error) {
+// given a context and a request pointers, sends
+// the http request and returns a response object
+func (c *Client) Send(ctx *context.Context, req *Request) (*Response, error) {
 	// Add Bearer Token to the headers
 	req.Load.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.ApiKey))
 
@@ -58,14 +53,13 @@ func (c *Client) SendRequest(ctx *context.Context, req *requests.Request) (*resp
 	defer res.Body.Close()
 
 	// Instance new response and fail (error) objects
-	response := &responses.Response{}
+	response := &Response{}
 	var fail error = nil
 
 	// Check status code to select the proper data struct
 	switch res.StatusCode {
 	case 200:
 		response.Success = true
-		fmt.Println(res.Body)
 		if err := json.NewDecoder(res.Body).Decode(&response.SuccessResponse); err != nil {
 			log.Println("Failure when trying to decode the JSON response from API")
 			return nil, err
@@ -87,6 +81,10 @@ func (c *Client) SendRequest(ctx *context.Context, req *requests.Request) (*resp
 			return nil, err
 		}
 	default:
+		response.Success = false
+		log.Printf("The status code %d is not expected, so printing raw response and exiting", res.StatusCode)
+		body, _ := io.ReadAll(res.Body)
+		log.Printf("Raw response:\n%s", body)
 		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 

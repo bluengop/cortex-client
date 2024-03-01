@@ -7,8 +7,7 @@ import (
 	"os"
 
 	"github.com/bluengop/cortex-client/internal/config"
-	"github.com/bluengop/cortex-client/internal/requests"
-	"github.com/bluengop/cortex-client/pkg/client"
+	"github.com/bluengop/cortex-client/pkg/client/v1"
 )
 
 var headers map[string]string
@@ -28,7 +27,7 @@ func main() {
 	}
 
 	// Create request
-	request, err := requests.NewRequest(
+	request, err := client.NewRequest(
 		&ctx,
 		"/catalog",
 		"get",
@@ -46,7 +45,7 @@ func main() {
 	)
 
 	// Send request and print response
-	response, error := client.SendRequest(&ctx, request)
+	response, error := client.Send(&ctx, request)
 	logger.Info(fmt.Sprintf("Response is %#v\n", response))
 	logger.Info(fmt.Sprintf("Error is %s\n", error))
 	logger.Debug(fmt.Sprintf("Cancel is of type %T\n", cancel))

@@ -1,4 +1,4 @@
-package requests
+package client
 
 import (
 	"context"
@@ -42,6 +42,7 @@ func NewRequest(ctx *context.Context, path, method, url string, headers map[stri
 		return nil, errors.New("bad http method")
 	}
 
+	// Create new HTTP Request
 	req, err := http.NewRequestWithContext(*ctx, method, url, nil) // Body is io.Reader
 	if err != nil {
 		log.Println("Error when creating a new http request: ", err)
