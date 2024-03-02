@@ -73,7 +73,7 @@ func (c *Client) Send(ctx *context.Context, req *Request) (*Response, error) {
 		response.Success = false
 		body, err := io.ReadAll(res.Body)
 		if err == nil {
-			log.Printf("Response Body: %s\n", body)
+			log.Printf("Response Body:\n%s\n", body)
 		}
 		if err := json.Unmarshal(body, &response.ErrorResponse); err != nil {
 			log.Printf("Failure when trying to decode the JSON response from API: %s\n", err)

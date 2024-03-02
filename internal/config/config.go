@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"path"
 	"strings"
@@ -22,14 +21,10 @@ type Config struct {
 // for both Request creation and Client instantiation
 func GetConfig(file string) (*Config, error) {
 	// Set the path to look for the configurations file
-	//log.Printf("Path is %s", path)
 	configDir := path.Dir(file)
 	configFile := path.Base(file)
 	extension := strings.Split(path.Ext(file), ".")
 	configExt := extension[len(extension)-1]
-
-	fmt.Printf("Configdir is %s\n", configDir)
-	fmt.Printf("ConfigFile is %s\n", configFile)
 
 	viper.AddConfigPath(configDir)
 
@@ -38,6 +33,11 @@ func GetConfig(file string) (*Config, error) {
 	viper.SetConfigType(configExt)
 
 	// Enable Viper to read Environment Variables
+	//   TODO: Not working as expected, still requires
+	//   a `config.env` file since it's igonring the
+	//   environment variables.
+	//   there are some discussions around it in the upstream:
+	//   https://github.com/spf13/viper/issues/761
 	viper.AutomaticEnv()
 
 	// Read config
@@ -54,5 +54,6 @@ func GetConfig(file string) (*Config, error) {
 		return nil, err
 	}
 
+	log.Printf("Configuration has been successfully loaded")
 	return config, nil
 }
