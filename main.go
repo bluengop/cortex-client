@@ -35,9 +35,9 @@ func main() {
 	// Create request
 	request, err := client.NewRequest(
 		&ctx,
-		"/catalog",
-		"get",
+		"GET",
 		conf.BaseUrl,
+		"/catalog/us-east-1-stage-sandbox-bravo",
 		headers,
 	)
 	if err != nil {
@@ -47,12 +47,12 @@ func main() {
 
 	// Create client
 	client := client.NewClient(
-		conf.BaseUrl,
 		conf.ApiKey,
 	)
 
 	// Send request and print response
 	log.Printf("Sending HTTP request...")
+	log.Printf("Calling URL %s", request.Payload.URL)
 	response, err := client.Send(&ctx, request)
 	if err != nil {
 		panic("error when sending response")

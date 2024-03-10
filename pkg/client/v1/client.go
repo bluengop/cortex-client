@@ -10,26 +10,16 @@ import (
 	"time"
 )
 
-// Base URL for the Cortex API version 1
-const BaseURLv1 = "https://api.getcortexapp.com/api/v1"
-
 // Cortex API Client
 type Client struct {
-	BaseURL    string
 	ApiKey     string
 	HTTPClient *http.Client
 }
 
 // NewClient() returns a new HTTP Client for Cortex
-// it requires an API Key for Cortex, and optionally,
-// the base URL to interact with.
-func NewClient(url, apikey string) *Client {
-	if url == "" {
-		url = BaseURLv1
-	}
-
+// it requires a valid API Key (Bearer token).
+func NewClient(apikey string) *Client {
 	return &Client{
-		BaseURL: url,
 		ApiKey:  apikey,
 		HTTPClient: &http.Client{
 			Timeout: time.Minute, // TODO: parametrize timeout
@@ -42,10 +32,10 @@ func NewClient(url, apikey string) *Client {
 // the http request and returns a response object
 func (c *Client) Send(ctx *context.Context, req *Request) (*Response, error) {
 	// Add Bearer Token to the headers
-	req.Load.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.ApiKey))
+	req.Payload.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.ApiKey))
 
 	// Execute the request
-	res, err := c.HTTPClient.Do(req.Load)
+	res, err := c.HTTPClient.Do(req.Payload)
 	if err != nil {
 		log.Println("Error when executing the http request: ", err)
 		return nil, err
