@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -20,7 +21,7 @@ type Client struct {
 // it requires a valid API Key (Bearer token).
 func NewClient(apikey string) *Client {
 	return &Client{
-		ApiKey:  apikey,
+		ApiKey: apikey,
 		HTTPClient: &http.Client{
 			Timeout: time.Minute, // TODO: parametrize timeout
 		},
@@ -42,41 +43,39 @@ func (c *Client) Send(ctx *context.Context, req *Request) (*Response, error) {
 	}
 	defer res.Body.Close()
 
-	// Instance new response and fail (error) objects
-	response := &Response{}
-	var fail error = nil
+	response := &Response{Success: false}
 
 	// Check status code to select the proper data struct
 	switch res.StatusCode {
-	case 200:
+
+	case http.StatusOK:
 		response.Success = true
 		if err := json.NewDecoder(res.Body).Decode(&response.SuccessResponse); err != nil {
-			log.Println("Failure when trying to decode the JSON response from API")
+			log.Printf("Failure when trying to decode the JSON response from API: %s", err)
 			return nil, err
 		}
-	case 401:
-		response.Success = false
-		fail = fmt.Errorf("unauthorized request")
+
+	case http.StatusUnauthorized:
 		log.Printf("Unauthorized request. Please, check your API token")
-		return nil, fail
-	case 404:
-		response.Success = false
-		body, err := io.ReadAll(res.Body)
-		if err == nil {
-			log.Printf("Response Body:\n%s\n", body)
-		}
-		if err := json.Unmarshal(body, &response.ErrorResponse); err != nil {
-			log.Printf("Failure when trying to decode the JSON response from API: %s\n", err)
-			log.Printf("Printing raw response body for debugging:\n%s\n", body)
+		return nil, errors.New("401: Unauthorized Request")
+
+	case http.StatusNotFound:
+		log.Printf("404: Not found")
+		if err := json.NewDecoder(res.Body).Decode(&response.ErrorResponse); err != nil {
+			log.Printf("Failure when trying to decode the JSON response from API: %s", err)
 			return nil, err
 		}
+
 	default:
-		response.Success = false
 		log.Printf("The status code %d is not expected, so printing raw response and exiting", res.StatusCode)
-		body, _ := io.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			log.Printf("Unable to read response's body")
+			return nil, err
+		}
 		log.Printf("Raw response:\n%s", body)
-		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+		return nil, nil
 	}
 
-	return response, fail
+	return response, nil
 }

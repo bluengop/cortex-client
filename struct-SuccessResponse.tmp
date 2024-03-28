@@ -1,0 +1,41 @@
+struct SuccessResponse {
+Name        string `json:"name"`
+Tag         string `json:"tag"`
+Description string `json:"description"`
+Type        string `json:"type"`
+Groups      []any  `json:"groups"`
+Owners      Owners `json:"owners"`
+Ownership struct {
+  Groups        []any `json:"groups"`
+  SlackChannels []any `json:"slackChannels"`
+  Emails        []any `json:"emails"`
+} `json:"ownership"`
+OwnersV2 struct {
+  Teams       []any `json:"teams"`
+  Individuals []any `json:"individuals"`
+} `json:"ownersV2"`
+Metadata   []any `json:"metadata"`
+Links      []any `json:"links"`
+Definition struct {
+  Region                 string `json:"region"`
+  AwsAccount             string `json:"aws_account"`
+  K8SVersion             string `json:"k8s_version"`
+  ContainerRuntime       string `json:"container_runtime"`
+  KarpenterEnabled       bool   `json:"karpenter_enabled"`
+  AwsEbsCsiDriverVersion string `json:"aws_ebs_csi_driver_version"`
+} `json:"definition"`
+Hierarchy struct {
+  Parents  []any `json:"parents"`
+  Children []any `json:"children"`
+} `json:"hierarchy"`
+LastUpdated   string `json:"lastUpdated"`
+IsArchived    bool   `json:"isArchived"`
+Git           any    `json:"git"`
+SlackChannels []any  `json:"slackChannels"`
+}
+
+struct Owners {
+  Groups        []any `json:"groups"`
+  SlackChannels []any `json:"slackChannels"`
+  Emails        []any `json:"emails"`
+}

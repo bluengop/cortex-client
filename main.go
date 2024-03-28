@@ -16,8 +16,7 @@ import (
 var headers map[string]string
 
 func main() {
-	// TODO: logger should me moved apart to a different package,
-	// and being passed through context.
+	// TODO: logger should me moved apart to a different packagece
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	logger.Debug("Still TODO. By now using 'log' default library")
 
@@ -55,10 +54,26 @@ func main() {
 	log.Printf("Calling URL %s", request.Payload.URL)
 	response, err := client.Send(&ctx, request)
 	if err != nil {
-		panic("error when sending response")
+		panic("an error occurred with the HTTP response")
 	}
+
 	if response.Success {
-		log.Printf(response.SuccessResponse.Description)
+		log.Println("Response:", *response)
+		log.Println("Definition:", response.SuccessResponse.Definition)
+		log.Println("Description:", response.SuccessResponse.Description)
+		log.Println("Git:", response.SuccessResponse.Git)
+		log.Println("Groups:", response.SuccessResponse.Groups)
+		log.Println("Hierarchy:", response.SuccessResponse.Hierarchy)
+		log.Println("IsArchived:", response.SuccessResponse.IsArchived)
+		log.Println("LastUpdated:", response.SuccessResponse.LastUpdated)
+		log.Println("Links:", response.SuccessResponse.Links)
+		log.Println("Metadata:", response.SuccessResponse.Metadata)
+		log.Println("Name:", response.SuccessResponse.Name)
+		log.Println("OwnersV2:", response.SuccessResponse.OwnersV2)
+		log.Println("Ownership:", response.SuccessResponse.Ownership)
+		log.Println("SlackChannels:", response.SuccessResponse.SlackChannels)
+		log.Println("Tag:", response.SuccessResponse.Tag)
+		log.Println("Type:", response.SuccessResponse.Type)
 	} else {
 		log.Printf(response.ErrorResponse.Message)
 		log.Printf(response.ErrorResponse.Details)
