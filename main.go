@@ -67,8 +67,9 @@ func main() {
 		log.Println("EKS container runtime:", response.SuccessResponse.Definition.ContainerRuntime)
 		log.Println("EkS K8s version:", response.SuccessResponse.Definition.K8SVersion)
 	} else {
-		log.Printf(response.ErrorResponse.Message)
-		log.Printf(response.ErrorResponse.Details)
+		log.Println("An error occurred")
+		log.Println("Message:", response.ErrorResponse.Message)
+		log.Println("Details:", response.ErrorResponse.Details)
 	}
 
 	logger.Debug(fmt.Sprintf("cancel is of tipe %T", cancel))
