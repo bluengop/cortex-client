@@ -1,22 +1,9 @@
 package client
 
-type Definition struct {
-	Definition any `json:"definition"`
-}
-type Children struct {
-	Children    *Children  `json:"children"`
-	Definition  Definition `json:"definition"`
-	Description string     `json:"description"`
-	Groups      []string   `json:"groups"`
-	Name        string     `json:"name"`
-	Tag         string     `json:"tag"`
-	Type        string     `json:"type"`
-}
-
-type Email struct {
-	Description string `json:"description"`
-	Email       string `json:"email"`
-	Inheritance string `json:"inheritance"`
+type Response struct {
+	Success         bool            `json:"ok"`
+	ErrorResponse   ErrorResponse   `json:"error"`
+	SuccessResponse SuccessResponse `json:"success"`
 }
 
 type ErrorResponse struct {
@@ -28,95 +15,54 @@ type ErrorResponse struct {
 	Type              string `json:"type"`
 }
 
-type Git struct {
-	Alias         string `json:"alias"`
-	Basepath      string `json:"basepath"`
-	Provider      string `json:"provider"`
-	Repository    string `json:"repository"`
-	RepositoryURL string `json:"repositoryUrl"`
+type SuccessResponse struct {
+	ID            string     `json:"id"`
+	Name          string     `json:"name"`
+	Tag           string     `json:"tag"`
+	Description   string     `json:"description"`
+	Type          string     `json:"type"`
+	Groups        []any      `json:"groups"`
+	Owners        Owners     `json:"owners"`
+	Ownership     Ownership  `json:"ownership"`
+	OwnersV2      OwnersV2   `json:"ownersV2"`
+	Metadata      []any      `json:"metadata"`
+	Links         []any      `json:"links"`
+	Definition    Definition `json:"definition"`
+	Hierarchy     Hierarchy  `json:"hierarchy"`
+	LastUpdated   string     `json:"lastUpdated"`
+	IsArchived    bool       `json:"isArchived"`
+	Git           any        `json:"git"`
+	SlackChannels []any      `json:"slackChannels"`
 }
 
-type Group struct {
-	Description string `json:"description"`
-	GroupName   string `json:"groupName"`
-	Inheritance string `json:"inheritance"`
-	Provider    string `json:"provider"`
-}
-
-type Hierarchy struct {
-	Children []Children `json:"children"`
-	Parents  []Parents  `json:"parents"`
-}
-
-type Individual struct {
-	Description string `json:"description"`
-	Email       string `json:"email"`
-}
-
-type Link struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Url  string `json:"url"`
-}
-
-type Metadata struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-type OwnersV2 struct {
-	Individuals []Individual `json:"individuals"`
-	Teams       []Team       `json:"teams"`
+type Owners struct {
+	Groups        []any `json:"groups"`
+	SlackChannels []any `json:"slackChannels"`
+	Emails        []any `json:"emails"`
 }
 
 type Ownership struct {
-	Emails []Email `json:"emails"`
-	Groups []Group `json:"groups"`
+	Groups        []any `json:"groups"`
+	SlackChannels []any `json:"slackChannels"`
+	Emails        []any `json:"emails"`
 }
 
-type Parents struct {
-	Definition  Definition `json:"definition"`
-	Description string     `json:"description"`
-	Groups      []string   `json:"groups"`
-	Name        string     `json:"name"`
-	Parents     *Parents   `json:"parents"`
-	Tag         string     `json:"tag"`
-	Type        string     `json:"type"`
+type OwnersV2 struct {
+	Teams       []any `json:"teams"`
+	Individuals []any `json:"individuals"`
 }
 
-type Response struct {
-	Success         bool            `json:"ok"`
-	ErrorResponse   ErrorResponse   `json:"error,omitempty"`
-	SuccessResponse SuccessResponse `json:"success,omitempty"`
+type Definition struct {
+	Name                   string `json:"name"`
+	Region                 string `json:"region"`
+	AwsAccount             string `json:"aws_account"`
+	K8SVersion             string `json:"k8s_version"`
+	ContainerRuntime       string `json:"container_runtime"`
+	KarpenterEnabled       bool   `json:"karpenter_enabled"`
+	AwsEbsCsiDriverVersion string `json:"aws_ebs_csi_driver_version"`
 }
 
-type SlackChannel struct {
-	Description          string `json:"description"`
-	Name                 string `json:"name"`
-	NotificationsEnabled bool   `json:"notificationsEnabled"`
-}
-
-type SuccessResponse struct {
-	Definition    Definition     `json:"definition"`
-	Description   string         `json:"description"`
-	Git           Git            `json:"git"`
-	Groups        []string       `json:"groups"`
-	Hierarchy     Hierarchy      `json:"hierarchy"`
-	IsArchived    bool           `json:"isArchived"`
-	LastUpdated   string         `json:"lastUpdated"` //TODO: use time.Time, RFC3339 ?
-	Links         []Link         `json:"links"`
-	Metadata      []Metadata     `json:"metadata"`
-	Name          string         `json:"name"`
-	OwnersV2      OwnersV2       `json:"ownersV2"`
-	Ownership     Ownership      `json:"ownership"`
-	SlackChannels []SlackChannel `json:"slackChannels"`
-	Tag           string         `json:"tag"`
-	Type          string         `json:"type"`
-}
-
-type Team struct {
-	Description string `json:"description"`
-	IsArchived  bool   `json:"isArchived"`
-	Name        string `json:"name"`
-	Tag         string `json:"tag"`
+type Hierarchy struct {
+	Parents  []any `json:"parents"`
+	Children []any `json:"children"`
 }
