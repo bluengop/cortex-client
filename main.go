@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"log/slog"
@@ -10,6 +11,7 @@ import (
 	//"github.com/spf13/cobra"
 
 	"github.com/bluengop/cortex-client/internal/config"
+	"github.com/bluengop/cortex-client/pkg/catalog/v1"
 	"github.com/bluengop/cortex-client/pkg/client/v1"
 )
 
@@ -62,15 +64,19 @@ func main() {
 		log.Println("Type:", response.SuccessResponse.Type)
 		log.Println("Name:", response.SuccessResponse.Name)
 		log.Println("Tag:", response.SuccessResponse.Tag)
-		log.Println("EKS Name:", response.SuccessResponse.Definition.Name)
-		log.Println("EKS Region:", response.SuccessResponse.Definition.Region)
-		log.Println("EKS container runtime:", response.SuccessResponse.Definition.ContainerRuntime)
-		log.Println("EkS K8s version:", response.SuccessResponse.Definition.K8SVersion)
+
+		// Unmarshall definition:
+		var eksDef catalog.EKSClusterDefinition
+		if err := json.Unmarshal(response.SuccessResponse.Definition, &eksDef); err == nil {
+			log.Println("EKSClusterDefinition:", eksDef)
+			log.Println("Cluster Name:", eksDef.Name)
+		}
 	} else {
 		log.Println("An error occurred")
 		log.Println("Message:", response.ErrorResponse.Message)
 		log.Println("Details:", response.ErrorResponse.Details)
 	}
+	logger.Debug(response.SuccessResponse.Description)
 
 	logger.Debug(fmt.Sprintf("cancel is of tipe %T", cancel))
 }
