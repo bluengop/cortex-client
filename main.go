@@ -8,7 +8,7 @@ import (
 	"log/slog"
 	"os"
 
-	//"github.com/spf13/cobra"
+	"github.com/spf13/cobra"
 
 	"github.com/bluengop/cortex-client/internal/config"
 	"github.com/bluengop/cortex-client/pkg/catalog/v1"
@@ -16,6 +16,51 @@ import (
 )
 
 var headers map[string]string
+
+var (
+	entityType    string
+	listEntities  bool
+	detailsEntity string
+	applyFile     string
+)
+
+var rootCmd = &cobra.Command{
+	Use:   "Cortex Client",
+	Short: "A golang API REST client for Cortex to get and create/update catalog entities",
+}
+
+var listEntitiesCmd = &cobra.Command{
+	Use:   "list-entities",
+	Short: "List entities",
+	Run: func(cmd *cobra.Command, args []string) {
+		entityType, _ = cmd.Flags().GetString("type")
+		listEntities = true
+		log.Println("Listing entities")
+		if entityType != "" {
+			log.Printf("Filter by type: %s\n", entityType)
+		}
+	},
+}
+
+var detailsCmd = &cobra.Command{
+	Use:   "details <entity>",
+	Short: "Retrieve details of the entity",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		detailsEntity = args[0]
+		log.Printf("Retrieving details for entity: %s\n", detailsEntity)
+	},
+}
+
+var applyCmd = &cobra.Command{
+	Use:   "apply <file>",
+	Short: "Create or update an entity defined in a YAML file",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		applyFile = args[0]
+		log.Printf("Applying configuration from file: %s\n", applyFile)
+	},
+}
 
 func main() {
 	// TODO: logger should me moved apart to a different packagece
